@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/gastos-web
+    steps:
+      - name: Obtener el repositorio
+        uses: actions/checkout@v7
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.23.3
+          cache: npm
+          cache-dependency-path: frontend/gastos-web/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Revisar formato
+        run: npm run format:check
+
+      - name: Ejecutar linter
+        run: npm run lint
+
+      - name: Ejecutar pruebas
+        run: npm test -- --no-watch --no-progress
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/gastos-api
+    env:
+      DB_URL: jdbc:mysql://127.0.0.1:3306/gastos_db
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    services:
+      mysql:
+        image: mysql:8.4.11
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gastos_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Obtener el repositorio
+        uses: actions/checkout@v7
+
+      - name: Preparar Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Validar backend y ejecutar pruebas
+        run: bash ./mvnw --batch-mode verify
