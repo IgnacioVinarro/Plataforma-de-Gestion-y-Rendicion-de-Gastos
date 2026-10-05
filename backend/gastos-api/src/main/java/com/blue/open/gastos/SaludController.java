@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SaludController {
 
-    @GetMapping("/api/salud")
-    public Map<String, String> verificarSalud() {
-        return Map.of("estado", "ok");
-    }
+	@GetMapping("/api/salud")
+	public Map<String, String> verificarSalud() {
+		return Map.of("estado", "ok");
+	}
+
 }
