@@ -1,0 +1,24 @@
+# Dependencias y archivos generados
+node_modules/
+dist/
+target/
+build/
+.angular/
+
+# Configuración local
+.env
+.env.*
+!.env.example
+
+# Comprobantes cargados durante pruebas
+Comprobantes/
+comprobantes/
+
+# Archivos de editores y del sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+#Archivos locales
+Paleta.md
